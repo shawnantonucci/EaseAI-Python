@@ -10,13 +10,12 @@ import requests
 import json
 import sys
 
-print("Initializing...")
-
 MASTER = os.environ['USERNAME']
+trigger = "hey maverick"
 
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[2].id)
+engine.setProperty('voice', voices[1].id)
 
 def playSound():
     filename = 'myfile.wav'
@@ -30,53 +29,34 @@ def speak(text):
 
 def greetMe():
     hour = int(datetime.datetime.now().hour)
-
     if hour >= 0 and hour < 12:
         speak("Good Morning" + MASTER)
     elif hour >= 12 and hour < 16:
         speak("Good Afternoon" + MASTER)
     else:
         speak("Good Evening" + MASTER)
-
-    # speak("How can I help you")
+        
     listenForCommand()
 
+activated = False
+
 def takeCommand():
+    global activated
+
     r = sr.Recognizer()
     with sr.Microphone() as source:
-        print("Say 'Hey Jenny' to activate")
+        if not activated:
+            speak("Say Maverick for assistance")
+            activated = True
         audio = r.listen(source)
-
     try:
-        # print("Analyzing voice")
-        # print(f"user said: {query}\n")
-        query = r.recognize_google(audio, language='en-in').lower()
+        query = r.recognize_google(audio, language='en-in')
         return query
-
     except Exception as e:
-        # speak("Sorry I did not understand. Say that again please")
-        query = ""
-        return takeCommand()
-            
-def proccessCommand():
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-        print("Say a Command")
-        audio = r.listen(source)
-
-    try:
-        query = r.recognize_google(audio, language='en-in').lower()
-        # print(f"user said: {query}\n")
-        return query
-
-    except Exception as e:
-        # speak("Sorry I did not understand. Say that again please")
         query = ""
         return takeCommand()
 
 def main(query):
-    # Logic for executing tasks based on the query
-
     #region Actions
     if 'wikipedia' in query:
         speak("Searching wikipedia...")
@@ -117,7 +97,7 @@ def main(query):
     #endregion
     
     #region Simple actions
-    elif 'time' in query:
+    elif 'time' in query.lower():
         strTime = datetime.datetime.now().strftime("%I:%M %p")
         speak(f"The time is {strTime}")
     
@@ -127,6 +107,9 @@ def main(query):
 
     elif 'thank you' in query:
         speak("You are welcome")
+
+    elif 'how are you' in query:
+        speak("I am doing great thanks for asking!")
 
     elif "joke" in query:
         response = requests.get("http://api.icndb.com/jokes/random")
@@ -143,11 +126,12 @@ def main(query):
 
 def listenForCommand():
     listening = True
+    
     while listening:
         command = takeCommand()
-        if "hey jenny" in command:
+        if "maverick" in command.lower():
             listening = False
-            query = proccessCommand()
+            query = command.replace("maverick", "")
             main(query)
             listening = True
 
