@@ -25,25 +25,43 @@ def speak(text):
 def greetMe():
     hour = int(datetime.datetime.now().hour)
 
-    if hour >= 0 and hour < 11:
+    if hour >= 0 and hour < 12:
         speak("Good Morning" + MASTER)
     elif hour >= 12 and hour < 16:
         speak("Good Afternoon" + MASTER)
     else:
         speak("Good Evening" + MASTER)
 
-    speak("Say a command anytime for assistance")
+    # speak("How can I help you")
+    listenForCommand()
 
 def takeCommand():
     r = sr.Recognizer()
     with sr.Microphone() as source:
-        print("Listening...")
+        print("Say 'Hey Jenny' to activate")
         audio = r.listen(source)
 
     try:
-        print("Recogmizing...")
+        # print("Analyzing voice")
         query = r.recognize_google(audio, language='en-in').lower()
-        print(f"user said: {query}\n")
+        # print(f"user said: {query}\n")
+        return query
+
+    except Exception as e:
+        # speak("Sorry I did not understand. Say that again please")
+        query = ""
+        return takeCommand()
+            
+def proccessCommand():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Say a Command")
+        audio = r.listen(source)
+
+    try:
+        print("Analyzing voice")
+        query = r.recognize_google(audio, language='en-in').lower()
+        # print(f"user said: {query}\n")
         return query
 
     except Exception as e:
@@ -94,11 +112,11 @@ def main(query):
     #endregion
     
     #region Simple actions
-    elif 'the time' in query:
+    elif 'time' in query:
         strTime = datetime.datetime.now().strftime("%I:%M %p")
         speak(f"The time is {strTime}")
     
-    elif 'the day' in query:
+    elif 'day' in query:
         x = datetime.datetime.now()
         speak(f"The day is" + x.strftime("%A"))
 
@@ -111,16 +129,22 @@ def main(query):
 
         speak(response_dict["value"]["joke"])
 
-    elif "quit app" in query:
+    elif "terminate" in query:
         speak("Terminating.....")
         sys.exit()
     #endregion
 
     query = ""
 
+def listenForCommand():
+    listening = True
+    while listening:
+        command = takeCommand()
+        if "hey jenny" in command:
+            listening = False
+            query = proccessCommand()
+            main(query)
+            listening = True
+
 # Main program Start
 greetMe()
-
-while True:
-    query = takeCommand()
-    main(query)
