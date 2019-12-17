@@ -1,5 +1,6 @@
 import pyttsx3
 import speech_recognition as sr
+import simpleaudio as sa
 import datetime
 import wikipedia
 import webbrowser
@@ -17,6 +18,11 @@ engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[2].id)
 
+def playSound():
+    filename = 'myfile.wav'
+    wave_obj = sa.WaveObject.from_wave_file(filename)
+    play_obj = wave_obj.play()
+    play_obj.wait_done()  # Wait until sound has finished playing  
 
 def speak(text):
     engine.say(text)
@@ -43,8 +49,8 @@ def takeCommand():
 
     try:
         # print("Analyzing voice")
-        query = r.recognize_google(audio, language='en-in').lower()
         # print(f"user said: {query}\n")
+        query = r.recognize_google(audio, language='en-in').lower()
         return query
 
     except Exception as e:
@@ -59,7 +65,6 @@ def proccessCommand():
         audio = r.listen(source)
 
     try:
-        print("Analyzing voice")
         query = r.recognize_google(audio, language='en-in').lower()
         # print(f"user said: {query}\n")
         return query

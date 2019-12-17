@@ -9,6 +9,7 @@ verify_ssl = true
 pyttsx3 = "*"
 speechrecognition = "*"
 wikipedia = "*"
+simpleaudio = "*"
 
 [requires]
 python_version = "3.8"
