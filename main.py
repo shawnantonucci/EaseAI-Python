@@ -46,20 +46,24 @@ def takeCommand():
     r = sr.Recognizer()
     with sr.Microphone() as source:
         if not activated:
-            speak("Say Maverick for assistance")
+            speak("Initiating Maverick...")
             activated = True
+        r.adjust_for_ambient_noise(source, 1)
         audio = r.listen(source)
     try:
         query = r.recognize_google(audio, language='en-in')
         return query
     except Exception as e:
         query = ""
-        return takeCommand()
+        query = takeCommand()
+        return query
+    except sr.RequestError as e: 
+        print("Could not request results from Google Speech Recognition service; {0}".format(e)) 
 
 def main(query):
     #region Actions
     if 'wikipedia' in query:
-        speak("Searching wikipedia...")
+        # speak("Searching wikipedia...")
         query = query.replace("wikipedia", "")
         results = wikipedia.summary(query, sentences=2)
         speak(results)
@@ -104,6 +108,15 @@ def main(query):
     elif 'day' in query:
         x = datetime.datetime.now()
         speak(f"The day is" + x.strftime("%A"))
+
+    elif "date" in query:
+        now = datetime.datetime.now()
+        
+        print("now =", now)
+        # dd/mm/YY H:M:S
+        dt_string = now.strftime("%B %d, %Y")
+        speak(f"Today is" + dt_string)	
+        # listenForCommand()
 
     elif 'thank you' in query:
         speak("You are welcome")
