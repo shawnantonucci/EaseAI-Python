@@ -10,6 +10,7 @@ pyttsx3 = "*"
 speechrecognition = "*"
 wikipedia = "*"
 simpleaudio = "*"
+geocoder = "*"
 
 [requires]
 python_version = "3.8"

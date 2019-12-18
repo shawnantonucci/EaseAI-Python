@@ -1,14 +1,18 @@
 import pyttsx3
 import speech_recognition as sr
 import simpleaudio as sa
-import datetime
 import wikipedia
 import webbrowser
-import os
-import smtplib
 import requests
+import datetime
+import geocoder
+import smtplib
+import config
 import json
 import sys
+import os
+
+API_KEY = "3a953c9d38d44253aa115852191812"
 
 MASTER = os.environ['USERNAME']
 trigger = "hey maverick"
@@ -37,6 +41,11 @@ def greetMe():
         speak("Good Evening" + MASTER)
         
     listenForCommand()
+
+def getLocation():
+    g = geocoder.ip('me')
+    city = g.city
+    return city
 
 activated = False
 
@@ -117,6 +126,25 @@ def main(query):
         dt_string = now.strftime("%B %d, %Y")
         speak(f"Today is" + dt_string)	
         # listenForCommand()
+
+    elif "weather" in query:
+        city = getLocation()
+        response = requests.get(f"https://api.weatherapi.com/v1/current.json?key={config.api_key}&q={city}")
+        response_dict = json.loads(response.text)
+        class weather:
+            def __init__(self, city):
+                self.city = response_dict["location"]["name"]
+                self.region = response_dict["location"]["region"]
+                self.temp = response_dict["current"]["temp_f"]
+                self.condition = response_dict["current"]["condition"]["text"]
+                self.wind = response_dict["current"]["wind_mph"]
+
+        CurrentWeather = weather("ann arbor")
+        speak(f"{CurrentWeather.city}, {CurrentWeather.region}. The temperature is {CurrentWeather.temp} degrees. It is {CurrentWeather.condition}. The wind is {CurrentWeather.wind} miles per hour.")
+
+    elif "location" in query:
+        city = getLocation()
+        speak(f"You are currently in {city}")
 
     elif 'thank you' in query:
         speak("You are welcome")
