@@ -23,10 +23,6 @@ elif platform == "win32":
     # Windows...
     MASTER = os.environ['USERNAME']
 
-API_KEY = "3a953c9d38d44253aa115852191812"
-
-trigger = "hey maverick"
-
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[1].id)
