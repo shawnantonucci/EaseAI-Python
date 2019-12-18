@@ -1,20 +1,30 @@
-import pyttsx3
 import speech_recognition as sr
 import simpleaudio as sa
+from sys import platform
 import wikipedia
 import webbrowser
 import requests
 import datetime
 import geocoder
+import pyttsx3
 import smtplib
 import config
 import json
 import sys
 import os
 
+if platform == "linux" or platform == "linux2":
+    # linux
+    MASTER = os.environ['USER']
+elif platform == "darwin":
+    # OS X
+    MASTER = os.environ['HG_USER']
+elif platform == "win32":
+    # Windows...
+    MASTER = os.environ['USERNAME']
+
 API_KEY = "3a953c9d38d44253aa115852191812"
 
-MASTER = os.environ['USERNAME']
 trigger = "hey maverick"
 
 engine = pyttsx3.init('sapi5')
